@@ -1,7 +1,8 @@
 import React, { Component } from "react";
-import { firestore } from "../firebase";
+import { firestore, auth } from "../firebase";
 import { collectIdsAndDocs } from "../utils";
 
+import Authentication from "./Authentication";
 import Posts from "./Posts";
 
 class Application extends Component {
@@ -22,26 +23,38 @@ class Application extends Component {
       //   comments: 47,
       // },
     ],
+    user: null,
   };
 
-  async componentDidMount() {
-    this.unsubscribe = firestore.collection("posts").onSnapshot((snapshot) => {
-      const posts = snapshot.docs.map(collectIdsAndDocs);
+  unsubscribeFromFireStoren = null;
+  unsubscribeFromAuth = null;
 
-      this.setState({ posts });
+  async componentDidMount() {
+    this.unsubscribeFromFireStore = firestore
+      .collection("posts")
+      .onSnapshot((snapshot) => {
+        const posts = snapshot.docs.map(collectIdsAndDocs);
+
+        this.setState({ posts });
+      });
+
+    this.unsubscribeFromFireStore = auth.onAuthStateChanged((user) => {
+      this.setState({ user });
     });
   }
 
   async componentWillUnmount() {
-    this.unsubscribe();
+    this.unsubscribeFromFireStore();
+    this.unsubscribeFromFireStore();
   }
 
   render() {
-    const { posts } = this.state;
+    const { posts, user } = this.state;
 
     return (
       <main className="Application">
         <h1>Think Piece</h1>
+        <Authentication user={user} />
         <Posts posts={posts} />
       </main>
     );
