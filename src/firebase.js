@@ -13,8 +13,5 @@ const config = {
 
 firebase.initializeApp(config);
 
-// TODO: delete this
-window.firebase = firebase;
-
 export default firebase;
 export const firestore = firebase.firestore();

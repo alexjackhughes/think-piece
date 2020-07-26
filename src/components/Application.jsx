@@ -25,29 +25,16 @@ class Application extends Component {
   };
 
   async componentDidMount() {
-    const snapshots = await firestore.collection("posts").get();
-    const posts = snapshots.docs.map(collectIdsAndDocs);
+    this.unsubscribe = firestore.collection("posts").onSnapshot((snapshot) => {
+      const posts = snapshot.docs.map(collectIdsAndDocs);
 
-    this.setState({ posts });
+      this.setState({ posts });
+    });
   }
 
-  handleCreate = async (post) => {
-    const { posts } = this.state;
-    const documentReference = await firestore.collection("posts").add(post);
-    const doc = await documentReference.get();
-    const storedPost = collectIdsAndDocs(doc);
-
-    this.setState({ posts: [storedPost, ...posts] });
-  };
-
-  handleDelete = async (id) => {
-    const allPosts = this.state.posts;
-    await firestore.collection("posts").doc(id).delete();
-
-    const posts = allPosts.filter((post) => post.id !== id);
-
-    this.setState({ posts });
-  };
+  async componentWillUnmount() {
+    this.unsubscribe();
+  }
 
   render() {
     const { posts } = this.state;
@@ -55,11 +42,7 @@ class Application extends Component {
     return (
       <main className="Application">
         <h1>Think Piece</h1>
-        <Posts
-          posts={posts}
-          onCreate={this.handleCreate}
-          onDelete={this.handleDelete}
-        />
+        <Posts posts={posts} />
       </main>
     );
   }
