@@ -55,7 +55,7 @@ class Application extends Component {
       <main className="Application">
         <h1>Think Piece</h1>
         <Authentication user={user} />
-        <Posts posts={posts} />
+        <Posts user={user} posts={posts} />
       </main>
     );
   }

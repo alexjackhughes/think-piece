@@ -11,16 +11,22 @@ class AddPost extends Component {
 
   handleSubmit = (event) => {
     event.preventDefault();
+
+    if (!this.props.user) {
+      return;
+    }
+
     const { title, content } = this.state;
+    const { uid, displayName, photoURL, email } = this.props.user;
 
     const post = {
       title,
       content,
       user: {
-        uid: "1111",
-        displayName: "Steve Kinney",
-        email: "steve@mailinator.com",
-        photoURL: "http://placekitten.com/g/200/200",
+        uid: uid,
+        displayName: displayName,
+        email: email,
+        photoURL: photoURL,
       },
       favorites: 0,
       comments: 0,
@@ -35,6 +41,7 @@ class AddPost extends Component {
 
   render() {
     const { title, content } = this.state;
+
     return (
       <form onSubmit={this.handleSubmit} className="AddPost">
         <input
